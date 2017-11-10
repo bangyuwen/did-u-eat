@@ -41,7 +41,7 @@ function handleEvent(event) {
     const echo = { type: 'text', text: reply };
 
     // use reply API
-    return client.replyMessage(event.replyToken, echo);
+    return lineClient.replyMessage(event.replyToken, echo);
   }
 
   return Promise.resolve(null);
