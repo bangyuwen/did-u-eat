@@ -1,19 +1,7 @@
-'use strict';
-
-const line = require('@line/bot-sdk');
 const express = require('express');
+const line = require('./line.js')
+const submitMenu = require('./src/submitMenu.js')
 
-// create LINE SDK config from env variables
-const config = {
-  channelAccessToken: '9G2nl534pVMJVQGrAyi3Qnuoxuj9LahTFgXX3CWo/D9cQvZgRMKW/06jb3ybK14mibNCJtQg/I+VWdTyrOqJdhtHSL5lH8/415ff6kd21T9yiRKqohCQDfnTOdJ1sr9Tj0J8QUCzD8J5SwutLcb3fAdB04t89/1O/w1cDnyilFU=',
-  channelSecret: '9ab2152f233a8cb7f11f4b901b7796e8',
-};
-
-// create LINE SDK client
-const client = new line.Client(config);
-
-// create Express app
-// about Express itself: https://expressjs.com/
 const app = express();
 
 // register a webhook handler with middleware
@@ -34,12 +22,22 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
+  let reply = '';
   let text = event.message.text;
   if (text[0] === '#') {
-    let command = text.split(' ')[0];
+    let parsedText = text.split(' ');
+    let command = parsedText[0].slice(1);
+    switch (command) {
+      case '菜單':
+        reply = submitMenu(parsedText[1]);
+        break;
+      default:
+        return;
+    }
+
 
     // create a echoing text message
-    const echo = { type: 'text', text: command };
+    const echo = { type: 'text', text: reply };
 
     // use reply API
     return client.replyMessage(event.replyToken, echo);
