@@ -33,6 +33,7 @@ function handleEvent(event) {
         reply = { type: 'text', text: submitMenu(parsedText[1]) };
         break;
       case '乖孫':
+        console.log('乖孫')
         reply = {
             "type": "image",
             "originalContentUrl": "https://goo.gl/E42og5",
