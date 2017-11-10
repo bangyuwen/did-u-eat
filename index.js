@@ -33,16 +33,15 @@ function handleEvent(event) {
         reply = { type: 'text', text: submitMenu(parsedText[1]) };
         break;
       case '乖孫':
-        console.log('乖孫')
         reply = {
             "type": "image",
-            "originalContentUrl": "https://goo.gl/E42og5",
-            "previewImageUrl": "https://goo.gl/E42og5"
+            "originalContentUrl": "https://scontent.ftpe8-3.fna.fbcdn.net/v/t1.0-9/15078611_1329670413719453_4863472404315728116_n.jpg?oh=a20ccc005d7aa505f922a33906e5e6b2&oe=5AAC9A9F",
+            "previewImageUrl": "https://scontent.ftpe8-3.fna.fbcdn.net/v/t1.0-9/15078611_1329670413719453_4863472404315728116_n.jpg?oh=a20ccc005d7aa505f922a33906e5e6b2&oe=5AAC9A9F"
         }
       default:
         return;
     }
-
+    console.log(reply);
     // use reply API
     return lineClient.replyMessage(event.replyToken, reply);
   }
