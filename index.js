@@ -36,8 +36,8 @@ function handleEvent(event) {
       case '山泉水':
         reply = {
             "type": "image",
-            "originalContentUrl": "./public/菜單_山泉水.jpg",
-            "previewImageUrl": "./public/菜單_山泉水.jpg"
+            "originalContentUrl": "./菜單_山泉水.jpg",
+            "previewImageUrl": "./菜單_山泉水.jpg"
         }
         break;
       case '乖孫':
