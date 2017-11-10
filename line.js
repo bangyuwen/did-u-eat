@@ -7,4 +7,5 @@ const config = {
 
 const client = new line.Client(config);
 
-module.exports = client
+module.exports = client;
+exports.config = config;
