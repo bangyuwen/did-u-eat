@@ -34,11 +34,19 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
+  let text = event.message.text;
+  if (text[0] === '#') {
+    let command = text.split(' ')[0];
 
-  // use reply API
-  return client.replyMessage(event.replyToken, echo);
+    // create a echoing text message
+    const echo = { type: 'text', text: command };
+
+    // use reply API
+    return client.replyMessage(event.replyToken, echo);
+  }
+
+  return Promise.resolve(null);
+
 }
 
 // listen on port
