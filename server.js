@@ -1,22 +1,42 @@
-var linebot = require('linebot');
-var express = require('express');
+const line = require('@line/bot-sdk');
+const express = require('express');
 
-var bot = linebot({
-  channelId: '1545649468',
+const config = {
   channelSecret: '9ab2152f233a8cb7f11f4b901b7796e8',
   channelAccessToken: '9G2nl534pVMJVQGrAyi3Qnuoxuj9LahTFgXX3CWo/D9cQvZgRMKW/06jb3ybK14mibNCJtQg/I+VWdTyrOqJdhtHSL5lH8/415ff6kd21T9yiRKqohCQDfnTOdJ1sr9Tj0J8QUCzD8J5SwutLcb3fAdB04t89/1O/w1cDnyilFU='
-});
+};
 
-bot.on('message', function(event) {
-  console.log(event); //把收到訊息的 event 印出來看看
-});
+// create LINE SDK client
+const client = new line.Client(config);
 
+// create Express app
+// about Express itself: https://expressjs.com/
 const app = express();
-const linebotParser = bot.parser();
-app.post('/', linebotParser);
 
-//因為 express 預設走 port 3000，而 heroku 上預設卻不是，要透過下列程式轉換
-var server = app.listen(process.env.PORT || 8080, function() {
-  var port = server.address().port;
-  console.log("App now running on port", port);
+// register a webhook handler with middleware
+// about the middleware, please refer to doc
+app.post('/webhook', line.middleware(config), (req, res) => {
+  Promise
+    .all(req.body.events.map(handleEvent))
+    .then((result) => res.json(result));
+});
+
+// event handler
+function handleEvent(event) {
+  if (event.type !== 'message' || event.message.type !== 'text') {
+    // ignore non-text-message event
+    return Promise.resolve(null);
+  }
+
+  // create a echoing text message
+  const echo = { type: 'text', text: event.message.text };
+
+  // use reply API
+  return client.replyMessage(event.replyToken, echo);
+}
+
+// listen on port
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`listening on ${port}`);
 });
