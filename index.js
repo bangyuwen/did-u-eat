@@ -5,6 +5,7 @@ const submitMenu = require('./src/submitMenu.js')
 
 const app = express();
 
+app.use(express.static('public'));
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/webhook', line.middleware(lineClient.config), (req, res) => {
@@ -32,19 +33,23 @@ function handleEvent(event) {
       case '菜單':
         reply = { type: 'text', text: submitMenu(parsedText[1]) };
         break;
-      case '乖孫':
-        console.log(reply + 'a');
+      case '山泉水':
         reply = {
             "type": "image",
-            "originalContentUrl": "https://scontent.ftpe8-3.fna.fbcdn.net/v/t1.0-9/15078611_1329670413719453_4863472404315728116_n.jpg?oh=a20ccc005d7aa505f922a33906e5e6b2&oe=5AAC9A9F",
-            "previewImageUrl": "https://scontent.ftpe8-3.fna.fbcdn.net/v/t1.0-9/15078611_1329670413719453_4863472404315728116_n.jpg?oh=a20ccc005d7aa505f922a33906e5e6b2&oe=5AAC9A9F"
+            "originalContentUrl": "./public/菜單_山泉水.jpg",
+            "previewImageUrl": "./public/菜單_山泉水.jpg"
         }
-        console.log(reply + 'b');
+        break;
+      case '乖孫':
+        reply = {
+            "type": "image",
+            "originalContentUrl": "https://goo.gl/E42og5",
+            "previewImageUrl": "https://goo.gl/E42og5"
+        }
         break;
       default:
         return;
     }
-    console.log(reply + 'c');
     // use reply API
     return lineClient.replyMessage(event.replyToken, reply);
   }
