@@ -30,18 +30,20 @@ function handleEvent(event) {
     let command = parsedText[0].slice(1);
     switch (command) {
       case '菜單':
-        reply = submitMenu(parsedText[1]);
+        reply = { type: 'text', text: submitMenu(parsedText[1]) };
         break;
+      case '乖孫':
+        reply = {
+            "type": "image",
+            "originalContentUrl": "https://goo.gl/E42og5",
+            "previewImageUrl": "https://goo.gl/E42og5"
+        }
       default:
         return;
     }
 
-
-    // create a echoing text message
-    const echo = { type: 'text', text: reply };
-
     // use reply API
-    return lineClient.replyMessage(event.replyToken, echo);
+    return lineClient.replyMessage(event.replyToken, reply);
   }
 
   return Promise.resolve(null);
