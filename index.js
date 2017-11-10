@@ -1,6 +1,6 @@
 const express = require('express');
 const line = require('@line/bot-sdk');
-const lineClient = require('./line.js')
+const lineClient = require('./lineClient.js')
 const submitMenu = require('./src/submitMenu.js')
 
 const app = express();
