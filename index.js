@@ -36,8 +36,8 @@ function handleEvent(event) {
       case '山泉水':
         reply = {
             "type": "image",
-            "originalContentUrl": "https://did-u-eat.herokuapp.com/菜單_山泉水.jpg",
-            "previewImageUrl": "https://did-u-eat.herokuapp.com/菜單_山泉水.jpg"
+            "originalContentUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg",
+            "previewImageUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg"
         }
         break;
       case '乖孫':
