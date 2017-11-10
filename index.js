@@ -1,12 +1,13 @@
 const express = require('express');
-const line = require('./line.js')
+const line = require('line');
+const lineClient = require('./line.js')
 const submitMenu = require('./src/submitMenu.js')
 
 const app = express();
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
-app.post('/webhook', (req, res) => {
+app.post('/webhook', line.middleware(lineClient.config), (req, res) => {
   Promise
     .all(req.body.events.map(handleEvent))
     .then((result) => res.json(result));
