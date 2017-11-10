@@ -5,7 +5,7 @@ const submitMenu = require('./src/submitMenu.js')
 
 const app = express();
 
-app.use(express.static('./public'));
+app.use(express.static('public'));
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/webhook', line.middleware(lineClient.config), (req, res) => {
