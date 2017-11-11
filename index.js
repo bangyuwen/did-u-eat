@@ -24,11 +24,11 @@ function handleEvent(event) {
   if (event.type === 'message' && event.message.type === 'image') {
     const stream = lineClient.getMessageContent(event.message.id);
     stream.pipe(fs.createWriteStream('./public/1.jpg'))
-    return {
+    return lineClient.replyMessage(event.replyToken, {
         "type": "image",
         "originalContentUrl": "https://did-u-eat.herokuapp.com/1.jpg",
         "previewImageUrl": "https://did-u-eat.herokuapp.com/1.jpg"
-    };
+    });
   }
 
   if (event.type !== 'message' || event.message.type !== 'text') {
