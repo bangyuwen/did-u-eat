@@ -1,6 +1,9 @@
+const fs = require('fs');
 const express = require('express');
 const line = require('@line/bot-sdk');
-const lineClient = require('./lineClient.js')
+const lineClient = require('./lineClient.js');
+const firebase = require('firebase');
+const firebaseClient = require('./firebaseClient');
 const submitMenu = require('./src/submitMenu.js')
 
 const app = express();
@@ -18,6 +21,15 @@ app.post('/webhook', line.middleware(lineClient.config), (req, res) => {
 function handleEvent(event) {
 
   console.log(event);
+  if (event.type === 'message' && event.message.type === 'image') {
+    const stream = lineClient.getMessageContent(event.message.id);
+    stream.pipe(fs.createWriteStream('./public/1.jpg'))
+    return {
+        "type": "image",
+        "originalContentUrl": "https://did-u-eat.herokuapp.com/1.jpg",
+        "previewImageUrl": "https://did-u-eat.herokuapp.com/1.jpg"
+    };
+  }
 
   if (event.type !== 'message' || event.message.type !== 'text') {
     // ignore non-text-message event
@@ -26,14 +38,14 @@ function handleEvent(event) {
 
   let reply = '';
   let text = event.message.text;
-  if (text[0] === '#') {
+  if (text[0] === '#' || text[0] === '＃') {
     let parsedText = text.split(' ');
     let command = parsedText[0].slice(1);
     switch (command) {
       case '菜單':
         reply = { type: 'text', text: submitMenu(parsedText[1]) };
         break;
-      case '山泉水':
+      case '山':
         reply = {
             "type": "image",
             "originalContentUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg",
