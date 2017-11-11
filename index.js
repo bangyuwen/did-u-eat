@@ -18,16 +18,28 @@ app.post('/webhook', line.middleware(lineClient.config), (req, res) => {
 });
 
 // event handler
+let shopName = '';
 function handleEvent(event) {
-
   console.log(event);
-  if (event.type === 'message' && event.message.type === 'image') {
+  console.log(shopName);
+  if (event.type === 'message' && event.message.type === 'image' && shopName) {
+
+    let imgId = new Date().getTime();
     const stream = lineClient.getMessageContent(event.message.id);
-    stream.pipe(fs.createWriteStream('./public/1.jpg'))
+    stream.pipe(fs.createWriteStream(`./public/${imgId}.jpg`))
+
+    firebaseClient.database().ref('menus/' + shopName).set({
+          Name: shopName,
+          id: imgId
+    }).catch(function(error){
+      console.error("Writing User Error:",error);
+    })
+
+    shopName = ''
+
     return lineClient.replyMessage(event.replyToken, {
-        "type": "image",
-        "originalContentUrl": "https://did-u-eat.herokuapp.com/1.jpg",
-        "previewImageUrl": "https://did-u-eat.herokuapp.com/1.jpg"
+        "type": "text",
+        "text": "阿嬤知道你喜歡吃這家了！"
     });
   }
 
@@ -43,7 +55,8 @@ function handleEvent(event) {
     let command = parsedText[0].slice(1);
     switch (command) {
       case '菜單':
-        reply = { type: 'text', text: submitMenu(parsedText[1]) };
+        shopName = parsedText[1];
+        reply = { type: 'text', text: '讓阿嬷看看菜單長什麼樣子' };
         break;
       case '山':
         reply = {
@@ -52,15 +65,16 @@ function handleEvent(event) {
             "previewImageUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg"
         }
         break;
-      case '乖孫':
-        reply = {
-            "type": "image",
-            "originalContentUrl": "https://goo.gl/E42og5",
-            "previewImageUrl": "https://goo.gl/E42og5"
-        }
-        break;
       default:
-        return;
+        firebaseClient.database().ref('menus/' + shopName).once('value').then(function(snapshot) {
+          console.log(snapshot.key);
+          reply = {
+              "type": "image",
+              "originalContentUrl": `https://did-u-eat.herokuapp.com/${snapshot.id}.jpg`,
+              "previewImageUrl": `https://did-u-eat.herokuapp.com/${snapshot.id}.jpg`
+          }
+          return lineClient.replyMessage(event.replyToken, reply);
+        });
     }
     // use reply API
     return lineClient.replyMessage(event.replyToken, reply);
