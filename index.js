@@ -66,14 +66,16 @@ function handleEvent(event) {
         }
         break;
       default:
-        firebaseClient.database().ref('menus/' + shopName).once('value').then(function(snapshot) {
-          console.log(snapshot.key);
+        firebaseClient.database().ref('menus/' + command).once('value').then(function(snapshot) {
+          console.log(snapshot.key, snapshot.child('id').val());
           reply = {
               "type": "image",
-              "originalContentUrl": `https://did-u-eat.herokuapp.com/${snapshot.id}.jpg`,
-              "previewImageUrl": `https://did-u-eat.herokuapp.com/${snapshot.id}.jpg`
+              "originalContentUrl": `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`,
+              "previewImageUrl": `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`
           }
           return lineClient.replyMessage(event.replyToken, reply);
+        }).catch((error) => {
+          console.error("Reading User Error:",error);
         });
     }
     // use reply API
