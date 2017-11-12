@@ -56,17 +56,13 @@ function handleEvent(event) {
     switch (command) {
       case '菜單':
         shopName = parsedText[1];
-        reply = { type: 'text', text: '讓阿嬷看看菜單長什麼樣子' };
-        break;
-      case '山':
-        reply = {
-            "type": "image",
-            "originalContentUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg",
-            "previewImageUrl": "https://did-u-eat.herokuapp.com/%E8%8F%9C%E5%96%AE_%E5%B1%B1%E6%B3%89%E6%B0%B4.jpg"
+        if (shopName) {
+          reply = { type: 'text', text: '讓阿嬷看看菜單長什麼樣子' };
         }
-        break;
-      default:
-        firebaseClient.database().ref('menus/' + command).once('value').then(function(snapshot) {
+        return lineClient.replyMessage(event.replyToken, reply);
+      case '開':
+        if (!parsedText[1]) break;
+        firebaseClient.database().ref('menus/' + parsedText[1]).once('value').then(function(snapshot) {
           console.log(snapshot.key, snapshot.child('id').val());
           reply = {
               "type": "image",
@@ -77,16 +73,23 @@ function handleEvent(event) {
         }).catch((error) => {
           console.error("Reading User Error:",error);
         });
+        break;
+      default:
+        if (parsedText.length < 3) break;
+        let userName = '';
+        lineClient.getProfile(event.source.userId).thien((profile) => {
+          userName = profile.displayName;
+          reply = {
+              "type": "text",
+              "text": `${userName}:${parsedText[1]}`
+          }
+          return lineClient.replyMessage(event.replyToken, reply);
+        })
     }
-    // use reply API
-    return lineClient.replyMessage(event.replyToken, reply);
   }
-
   return Promise.resolve(null);
-
 }
 
-// listen on port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`listening on ${port}`);
