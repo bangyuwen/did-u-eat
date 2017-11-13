@@ -62,6 +62,16 @@ module.exports = (event) => {
           text: getOrderList(),
         };
         return lineClient.replyMessage(event.replyToken, reply);
+      case 'help':
+        reply = {
+          type: 'text',
+          text: '#菜單  山泉水\n 設定菜單\n' +
+                '#開  山泉水\n 叫出菜單照片\n' +
+                '#截\n 叫出訂單\n' +
+                '#刪除 邦宇\n 刪除訂購\n' +
+                '#help\n 小幫手',
+        };
+        return lineClient.replyMessage(event.replyToken, reply);
       default: {
         return Promise.resolve(null);
       }
