@@ -7,7 +7,6 @@ let shopName = '';
 module.exports = (event) => {
   console.log(event);
   if (event.type === 'message' && event.message.type === 'image' && shopName) {
-    console.log(shopName);
     const messageId = event.message.id;
     storeMenuImg(shopName, messageId);
     shopName = '';

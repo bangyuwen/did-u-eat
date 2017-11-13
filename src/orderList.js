@@ -1,5 +1,5 @@
 // store the orders in Object as name order pair
-const store = {};
+let store = {};
 
 exports.pushNewOrder = (message) => {
   const newOrderList = message.split('\n');
@@ -15,5 +15,6 @@ exports.getOrderList = () => {
 };
 
 exports.deleteOrder = (user) => {
+  if (!user) store = {};
   delete store[user];
 };
