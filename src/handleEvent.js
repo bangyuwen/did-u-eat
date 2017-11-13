@@ -21,6 +21,7 @@ module.exports = (event) => {
     return Promise.resolve(null);
   }
 
+  // command part
   let reply = '';
   const { text } = event.message;
   if (text[0] === '#' || text[0] === '＃') {
@@ -75,6 +76,7 @@ module.exports = (event) => {
     }
   }
 
+  // order part
   if ((text.indexOf(':') > 0 || text.indexOf('：') > 0) && text.indexOf('//') < 0) {
     pushNewOrder(text);
     reply = { type: 'text', text: getOrderList() };
