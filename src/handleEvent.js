@@ -32,12 +32,13 @@ module.exports = (event) => {
         shopName = secondArg;
         if (secondArg) {
           reply = { type: 'text', text: '讓阿嬷看看菜單長什麼樣子' };
+        } else {
+          reply = { type: 'text', text: '阿嬷不懂你在幹嘛？' };
         }
         return lineClient.replyMessage(event.replyToken, reply);
       case '開':
         if (!secondArg) break;
         firebaseClient.database().ref(`menus/ ${secondArg}`).once('value').then((snapshot) => {
-          console.log(snapshot.key, snapshot.child('id').val());
           const imgId = snapshot.child('id').val();
           if (imgId) {
             reply = {
@@ -57,10 +58,7 @@ module.exports = (event) => {
         reply = { type: 'text', text: '已刪除' };
         return lineClient.replyMessage(event.replyToken, reply);
       case '截':
-        reply = {
-          type: 'text',
-          text: getOrderList(),
-        };
+        reply = { type: 'text', text: getOrderList() };
         return lineClient.replyMessage(event.replyToken, reply);
       case 'help':
         reply = {
@@ -80,10 +78,7 @@ module.exports = (event) => {
 
   if ((text.indexOf(':') > 0 || text.indexOf('：') > 0) && text.indexOf('//') < 0) {
     pushNewOrder(text);
-    reply = {
-      type: 'text',
-      text: getOrderList(),
-    };
+    reply = { type: 'text', text: getOrderList() };
     console.log(reply);
     return lineClient.replyMessage(event.replyToken, reply);
   }
