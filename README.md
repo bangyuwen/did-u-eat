@@ -1,6 +1,6 @@
-# Echo Bot
+# Did U Eat
 
-An example LINE bot just to echo messages
+A line bot which helps you order the delivery in a group
 
 ## How to use
 
@@ -12,11 +12,7 @@ $ npm install
 
 Configuration:
 
-``` bash
-$ export CHANNEL_SECRET=YOUR_CHANNEL_SECRET
-$ export CHANNEL_ACCESS_TOKEN=YOUR_CHANNEL_ACCESS_TOKEN
-$ export PORT=1234
-```
+change the configuration in firebaseClient.js and lineClient.js
 
 Run:
 
