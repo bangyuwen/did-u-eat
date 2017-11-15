@@ -1,15 +1,16 @@
 const lineClient = require('../lineClient.js');
 const firebaseClient = require('../firebaseClient');
 const { pushNewOrder, deleteOrder, getOrderList } = require('./orderList');
-const storeMenuImg = require('./storeMenuImg');
+const { storeMenu } = require('./menu');
 
 let shopName = '';
+let menuUpload = false;
 module.exports = (event) => {
   console.log(event);
-  if (event.type === 'message' && event.message.type === 'image' && shopName) {
+  if (event.type === 'message' && event.message.type === 'image' && menuUpload) {
     const messageId = event.message.id;
-    storeMenuImg(shopName, messageId);
-    shopName = '';
+    storeMenu(shopName, messageId);
+    menuUpload = false;
     return lineClient.replyMessage(event.replyToken, {
       type: 'text',
       text: '阿嬤知道你喜歡吃這家了！',
@@ -28,31 +29,49 @@ module.exports = (event) => {
     const parsedText = text.slice(1).split(' ');
     const [command, secondArg] = parsedText;
     switch (command) {
-      case '菜單':
+      case '開': {
         shopName = secondArg;
-        if (secondArg) {
-          reply = { type: 'text', text: '讓阿嬷看看菜單長什麼樣子' };
-        } else {
-          reply = { type: 'text', text: '阿嬷不懂你在幹嘛？' };
-        }
-        return lineClient.replyMessage(event.replyToken, reply);
-      case '開':
         if (!secondArg) break;
-        firebaseClient.database().ref(`menus/ ${secondArg}`).once('value').then((snapshot) => {
-          const imgId = snapshot.child('id').val();
-          if (imgId) {
-            reply = {
-              type: 'image',
-              originalContentUrl: `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`,
-              previewImageUrl: `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`,
-            };
-          }
-          return lineClient.replyMessage(event.replyToken, reply);
-        })
-          .catch((error) => {
-            console.error('Reading User Error:', error);
+        const ref = firebaseClient.database().ref('menus');
+        ref.orderByChild('Name').equalTo(secondArg).limitToFirst(1).once('value')
+          .then((snapshot) => {
+            const imgId = snapshot.child('id').val();
+            if (imgId) {
+              reply = {
+                type: 'image',
+                originalContentUrl: `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`,
+                previewImageUrl: `https://did-u-eat.herokuapp.com/${snapshot.child('id').val()}.jpg`,
+              };
+            } else {
+              reply = {
+                type: 'template',
+                altText: 'GG',
+                template: {
+                  type: 'confirm',
+                  text: '沒有菜單誒！要新增嗎？',
+                  actions: [
+                    {
+                      type: 'message',
+                      label: '當然',
+                      text: '#當然',
+                    },
+                    {
+                      type: 'message',
+                      label: '不要',
+                      text: '#不要',
+                    },
+                  ],
+                },
+              };
+            }
+            return lineClient.replyMessage(event.replyToken, reply);
           });
         break;
+      }
+      case '當然':
+        menuUpload = true;
+        reply = { type: 'text', text: '上傳給我吧！' };
+        return lineClient.replyMessage(event.replyToken, reply);
       case '刪除':
         deleteOrder(secondArg);
         reply = { type: 'text', text: '已刪除' };
@@ -63,8 +82,7 @@ module.exports = (event) => {
       case 'help':
         reply = {
           type: 'text',
-          text: '#菜單  山泉水\n 設定菜單\n' +
-                '#開  山泉水\n 叫出菜單照片\n' +
+          text: '#開  山泉水\n 叫出菜單照片\n' +
                 '#截\n 叫出訂單\n' +
                 '#刪除 邦宇\n 刪除訂購\n' +
                 '#help\n 小幫手',
